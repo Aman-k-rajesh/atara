@@ -1,0 +1,412 @@
+    <!DOCTYPE html>
+    {% load static %}
+    <html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <title>ATARA</title>
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <!-- Favicon -->
+        <link rel="icon" type="image/png" href="{% static 'img/Alogo.jpg' %}">
+        <meta content="" name="keywords">
+        <meta content="" name="description">
+
+        <!-- Google Web Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600&family=Roboto&display=swap"
+            rel="stylesheet">
+
+        <!-- Icon Font Stylesheet -->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+        <!-- Libraries Stylesheet -->
+        <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+        <link href="{% static 'lib/lightbox/css/lightbox.min.css' %}" rel="stylesheet">
+
+
+        <!-- Customized Bootstrap Stylesheet -->
+        <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+        <!-- Template Stylesheet -->
+        <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+    </head>
+
+    <body style="background-color:#ffffe6;">
+        {% if re.id %}
+        <style>
+            /*** Tour Booking Start ***/
+            .bookingpage {
+                background: linear-gradient(rgba(19, 53, 123, .8), rgba(19, 53, 123, .8)), url({{re.Productimage.url}});
+                background-position: center center;
+                background-repeat: no-repeat;
+                background-size: cover;
+                background-attachment: fixed;
+
+            }
+
+
+            .bookingpage .container .section-bookingpage-title {
+                position: relative;
+                display: inline-block;
+                text-transform: uppercase;
+                color: var(--bs-white);
+            }
+
+            .bookingpage .container .section-bookingpage-title::before {
+                content: "";
+                width: 50px;
+                position: absolute;
+                top: 50%;
+                right: 0;
+                transform: translateY(-50%);
+                margin-right: -50px;
+                border: 1px solid var(--bs-white) !important;
+            }
+
+            .bookingpage .container form .btn.btn-primary {
+                box-shadow: inset 0 0 0 0 var(--bs-primary);
+            }
+
+            .bookingpage .container form .btn.btn-primary:hover {
+                box-shadow: inset 800px 0 0 0 var(--bs-light) !important;
+                color: var(--bs-primary) !important;
+            }
+        </style>
+        <!-- Spinner Start -->
+        <div id="spinner"
+            class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+        <!-- Spinner End -->
+
+
+
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-dark px-4 px-lg-5 py-3">
+            <a href="#" class="navbar-brand">
+                <h1 class="m-0 text-primary"><i class="fa fa-map-marker-alt me-3"></i>ATARA</h1>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="fa fa-bars"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav ms-auto py-0">
+                    <a href="/user/uhome" class="nav-item nav-link ">Home</a>
+                    {% comment %}
+                    <a href="uinquire" class="nav-item nav-link">Inquire</a>
+                    {% endcomment %}
+                    <a href="{% url 'uprofile' %}" class="nav-item nav-link">Profile</a>
+                    <a href="{% url 'uorder' %}" class="nav-item nav-link">My Orders</a>
+                    <a href="{% url 'uabout' %}" class="nav-item nav-link">About</a>
+
+                    <a href="uabout" class="nav-item nav-link">About</a>
+                </div>
+                <a href="#" id="signOutBtn" class="btn btn-danger rounded-pill ms-3 px-3 py-1">
+                    Sign Out
+                </a>
+
+                <!-- Confirmation Popup -->
+                <div id="confirmationPopup"
+                    style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                    background-color: rgba(55, 194, 108, 10); color: white; padding: 30px; border-radius: 10px; width: 300px; text-align: center; box-shadow: 0 0 10px rgba(111, 216, 172, 0.5);">
+                    <h5>Are you sure you want to sign out?</h5>
+                    <button id="confirmSignOut" class="btn btn-danger m-2">Yes, Sign Out</button>
+                    <button id="cancelSignOut" class="btn btn-primary m-2">Cancel</button>
+                </div>
+
+                <script>
+                    // Show the confirmation popup when the sign-out button is clicked
+                    document.getElementById('signOutBtn').addEventListener('click', function (event) {
+                        event.preventDefault();  // Prevent the default behavior of the sign-out button
+
+                        // Display the confirmation popup
+                        document.getElementById('confirmationPopup').style.display = 'block';
+                    });
+
+                    // If the user confirms the sign-out, redirect to the sign-out URL
+                    document.getElementById('confirmSignOut').addEventListener('click', function () {
+                        // Redirect to the sign-out page (adjust URL as needed)
+                        window.location.href = '/';
+                    });
+
+                    // If the user cancels, hide the confirmation popup
+                    document.getElementById('cancelSignOut').addEventListener('click', function () {
+                        // Hide the confirmation popup
+                        document.getElementById('confirmationPopup').style.display = 'none';
+                    });
+                </script>
+
+            </div>
+        </nav>
+
+
+        <div class="container-fluid bookingpage py-5">
+            <div class="container py-5">
+                <div class="row g-5 align-items-center">
+                    <div class="col-lg-6">
+                        <br>
+                        <br>
+                        <h5 class="section-bookingpage-title pe-3">Product</h5>
+                        <h1 class="text-white mb-4">{{re.Name}}</h1>
+                        <p class="text-white mb-4" style="font-family:ui-serif;font-size: 25px;">{{re.Description}}
+
+                        </p>
+                        <br>
+                        <p class="text-white mb-4" style="font-family:ui-serif;font-size: 25px;">{{re.Details}}</p>
+                        <br>
+                        <p class="btn btn-light text-primary rounded-pill py-3 px-5 mt-2">₹{{re.Price}}/-
+                        </p>
+
+                    </div>
+                    <div class="col-lg-6">
+                        <br>
+                        <br>
+                        <h1 class="text-white mb-3">Booking</h1>
+                        <form method="post" enctype="multipart/form-data" class="form-area contact-form text-right"
+                            id="bookingForm">
+                            {% csrf_token %}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control bg-white border-0" value="{{ re.Name }}"
+                                            name="productname" id="productname" placeholder="Your Name" readonly>
+                                        <label for="productname">Product Name</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control bg-white border-0" value="{{ re.Price }}"
+                                            name="price" id="price" placeholder="Your Email" readonly>
+                                        <label for="price">Price</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-floating date" id="date3" data-target-input="nearest">
+                                        <input type="text" class="form-control bg-white border-0" value="{{ re.Services }}"
+                                            id="datetime" placeholder="Date & Time" name="centrename"
+                                            data-target="#date3" data-toggle="datetimepicker" readonly />
+                                        <label for="datetime">Service Centre Name</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-floating date" id="date3" data-target-input="nearest">
+                                        <input type="text" class="form-control bg-white border-0" value="{{ re.id }}"
+                                            id="datetime" placeholder="Phone Number" name="sp" data-target="#date3"
+                                            data-toggle="datetimepicker" readonly />
+                                        <label for="phonenumber">Product ID</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <div class="form-floating position-relative">
+                                        <input type="number" class="form-control bg-white border-0" id="quantity"
+                                            name="quantity" placeholder="Quantity" value="1" min="1" required
+                                            style="text-align: left; padding-left: 15px; height: 50px;">
+                                        <label for="quantity">Quantity</label>
+
+                                        <!-- Increment & Decrement Buttons -->
+                                        <div class="position-absolute top-50 translate-middle-y"
+                                            style="right: 10px; display: flex; gap: 5px;">
+                                            <button type="button" class="btn btn-sm btn-outline-primary px-2"
+                                                onclick="changeQuantity(-1)">−</button>
+                                            <button type="button" class="btn btn-sm btn-outline-primary px-2"
+                                                onclick="changeQuantity(1)">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- JavaScript for Increment/Decrement -->
+                                <script>
+                                    function changeQuantity(change) {
+                                        let qtyInput = document.getElementById('quantity');
+                                        let newValue = parseInt(qtyInput.value) + change;
+
+                                        // Ensure the quantity never goes below 1
+                                        if (newValue >= 1) {
+                                            qtyInput.value = newValue;
+                                        }
+                                    }
+                                </script>
+
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <textarea class="form-control bg-white border-0" placeholder="Add Address"
+                                            name="addaddress" id="addaddress" style="height: 100px" required></textarea>
+                                        <label for="addaddress">Add Address</label>
+                                        <small id="addressError" style="color: red; display: none;">Address is required!</small>
+                                    </div>
+                                </div>
+
+                                <br>
+                                <div class="col-12">
+                                    <button class="btn btn-primary text-white w-100 py-3" type="submit">Add To Cart</button>
+                                </div>
+                                <!-- Hidden message container (Pop-up) -->
+                                <div id="orderMessage" class="modal"
+                                    style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                                    background-color: white; color: black; padding: 20px; border-radius: 5px; width: 300px; text-align: center; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);">
+                                    <h5>Order placed</h5>
+                                    <p>Your order has been successfully placed. You will be redirected shortly.</p>
+                                </div>
+
+
+
+                                <!-- JavaScript for Address Validation -->
+                                <script>
+
+                                    function validateForm() {
+                                        const addressInput = document.getElementById("addaddress");
+                                        const addressError = document.getElementById("addressError");
+
+                                        if (addressInput.value.trim() === "") {
+                                            addressError.style.display = "block"; // Show error message
+                                            addressInput.style.border = "2px solid red"; // Highlight input field
+                                            addressInput.focus(); // Focus on the address field
+                                            return false; // Prevent form submission
+                                        } else {
+                                            addressError.style.display = "none"; // Hide error message
+                                            addressInput.style.border = ""; // Remove red border
+                                            return true; // Allow form submission
+                                        }
+                                    }
+                                    // Function to check if all fields are filled
+                                    function checkFields() {
+                                        const productName = document.getElementById('productname').value;
+                                        const price = document.getElementById('price').value;
+                                        const quantity = document.getElementById('quantity').value;
+                                        const address = document.getElementById('address').value;
+                                        const addToCartBtn = document.getElementById('addToCartBtn');
+
+                                        // Enable the button only if all fields are filled
+                                        if (productName && price && quantity && address) {
+                                            addToCartBtn.disabled = false;
+                                        } else {
+                                            addToCartBtn.disabled = true;
+                                        }
+                                    }
+
+                                    // Add event listeners to all input fields to check validation on input
+                                    document.getElementById('productname').addEventListener('input', checkFields);
+                                    document.getElementById('price').addEventListener('input', checkFields);
+                                    document.getElementById('quantity').addEventListener('input', checkFields);
+                                    document.getElementById('address').addEventListener('input', checkFields);
+
+                                    // Handle button click, show pop-up and submit form
+                                    document.getElementById('addToCartBtn').addEventListener('click', function (event) {
+                                        event.preventDefault();  // Prevent the default form submission
+
+                                        // Check if all fields are valid before proceeding
+                                        if (document.getElementById('addToCartBtn').disabled) {
+                                            return; // Do nothing if the button is disabled
+                                        }
+
+                                        // Show the order placed pop-up
+                                        document.getElementById('orderMessage').style.display = 'block';
+
+                                        // Wait for 2 seconds to let the user see the pop-up
+                                        setTimeout(function () {
+                                            // Submit the form after the pop-up is shown
+                                            document.getElementById('bookingForm').submit();
+
+                                            // Redirect after 3 seconds from now
+                                            setTimeout(function () {
+                                                window.location.href = "/my-orders";  // Redirect to the 'My Orders' page
+                                            }, 4000); // 3000 ms = 3 seconds
+                                        }, 5000);  // 2000 ms = 2 seconds to show the pop-up
+                                    });
+                                </script>
+
+
+
+
+                            </form>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+            
+            <form method="post" enctype="multipart/form-data" action="{% url 'add_review' re.id %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="rating">Rating:</label>
+                    <select name="rating" id="rating" class="form-select" required>
+                        <option value="">Select rating</option>
+                        <option value="5">★★★★★</option>
+                        <option value="4">★★★★☆</option>
+                        <option value="3">★★★☆☆</option>
+                        <option value="2">★★☆☆☆</option>
+                        <option value="1">★☆☆☆☆</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="comment">Comment:</label>
+                    <textarea name="comment" id="comment" class="form-control" rows="3" placeholder="Write your review..." required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="image">Upload Image (optional):</label>
+                    <input type="file" name="image" id="image" class="form-control" accept="image/*">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Review</button>
+            </form>
+            
+            {% else %}
+                <p><a href="{% url 'login' %}">Log in</a> to add a review.</p>
+            {% endif %}
+            
+            <hr>
+            
+            <!-- Display Latest 5 Reviews -->
+            <div class="text-center mt-6">
+                <a href="{% url 'all_reviews' re.id %}" class="inline-block bg-purple-600 text-white font-semibold py-2 px-6 rounded-lg shadow hover:bg-purple-700 transition">
+                    View All Reviews
+                </a>
+                              
+            </div>
+            
+            
+            <!-- About End -->
+             
+            <a href="#" class="btn btn-primary btn-primary-outline-0 btn-md-square back-to-top"><i
+                    class="fa fa-arrow-up"></i></a>
+                    {% if messages %}
+                    <script>
+                        {% for message in messages %}
+                            Swal.fire({
+                                title: "{% if message.tags == 'success' %}Success!{% else %}Oops!{% endif %}",
+                                text: "{{ message }}",
+                                icon: "{% if message.tags == 'success' %}success{% else %}error{% endif %}",
+                                confirmButtonText: "OK"
+                            });
+                        {% endfor %}
+                    </script>
+                    {% endif %}
+                    
+
+            <!-- JavaScript Libraries -->
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+            <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+            <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+            <script src="{% static 'lib/lightbox/js/lightbox.min.js' %}"></script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
+            <!-- Template Javascript -->
+            <script src="{% static 'js/main.js' %}"></script>
+            <!-- Booking Success Modal -->
+
+    </body>
+
+    </html>

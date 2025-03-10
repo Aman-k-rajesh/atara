@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Chat</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .chat-container {
+            display: flex;
+            width: 80%;
+            margin: auto;
+        }
+        .sidebar {
+            width: 25%;
+            border-right: 1px solid #ddd;
+            padding: 10px;
+        }
+        .chatbox {
+    width: 75%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    display: flex;
+    flex-direction: column;
+    height: 500px; /* Fixed height */
+}
+
+#chatbox {
+    flex-grow: 1;
+    overflow-y: auto;
+    height: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.chat-message {
+    padding: 8px;
+    margin: 5px;
+    border-radius: 5px;
+    max-width: 70%;
+    word-wrap: break-word;
+}
+
+.sender {
+    background-color: #cfe9ff;
+    text-align: right;
+    align-self: flex-end;
+}
+
+.receiver {
+    background-color: #e0e0e0;
+    text-align: left;
+    align-self: flex-start;
+}
+
+.message-box {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+        .search-box {
+            width: 100%;
+            padding: 5px;
+        }
+        .search-results {
+            list-style: none;
+            padding: 0;
+            border: 1px solid #ddd;
+            max-height: 150px;
+            overflow-y: auto;
+            display: none;
+        }
+        .search-item {
+            padding: 8px;
+            cursor: pointer;
+        }
+        .search-item:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <!-- Sidebar for Service Search & Recent Chats -->
+        <div class="sidebar">
+            <h3>Search Service</h3>
+            <input type="text" id="serviceSearch" class="search-box" placeholder="Search service...">
+            <ul id="serviceList" class="search-results"></ul>
+            
+            <h3>Recent Chats</h3>
+            <ul id="recentChats"></ul>
+        </div>
+
+        <!-- Chat Section -->
+        <div class="chatbox">
+            <h3>Chat</h3>
+            <div id="chatbox">
+                <p>Select a service to start chatting</p>
+            </div>
+
+            <!-- Message Input -->
+            <div class="message-box">
+                <input type="hidden" id="selectedService">
+                <textarea id="messageInput" rows="3" placeholder="Type a message..."></textarea>
+                <button id="sendMessageBtn">Send</button>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            let debounceTimer;
+            let currentServiceId = null; // Store the currently selected service ID
+    
+            $("#serviceSearch").on("keyup", function () {
+                clearTimeout(debounceTimer);
+                let query = $(this).val().trim();
+    
+                if (query.length > 0) {
+                    $("#searchLoading").show();  // Show loading indicator
+                    debounceTimer = setTimeout(function () {
+                        fetchServices(query);
+                    }, 300);
+                } else {
+                    $("#serviceList").hide();
+                }
+            });
+    
+            function fetchServices(query) {
+                $.ajax({
+                    url: "{% url 'get_services' %}",
+                    data: { q: query },
+                    dataType: "json",
+                    success: function (data) {
+                        $("#searchLoading").hide(); // Hide loading indicator
+                        let dropdown = $("#serviceList");
+                        dropdown.empty().show();
+    
+                        if (data.services.length > 0) {
+                            data.services.forEach(service => {
+                                dropdown.append(`
+                                    <li class="search-item">
+                                        <a href="#" class="service-link" data-id="${service.id}" data-name="${service.CentreName} - ${service.Location}">
+                                            ${service.CentreName} - ${service.Location}
+                                        </a>
+                                    </li>
+                                `);
+                            });
+                        } else {
+                            dropdown.append('<li class="search-item">No service centers found</li>');
+                        }
+                    },
+                    error: function (xhr) {
+                        $("#searchLoading").hide();  // Hide loading indicator
+                        console.error("Error fetching services:", xhr.responseText);
+                        $("#errorArea").text("Error fetching service centers. Please try again."); // Non-intrusive error
+                    }
+                });
+            }
+    
+            $(document).on("click", ".service-link", function (e) {
+                e.preventDefault();
+                let serviceId = $(this).attr("data-id");
+                let serviceName = $(this).attr("data-name"); // Use data-name attribute
+    
+                $("#serviceSearch").val(serviceName);
+                $("#selectedService").val(serviceId);
+                $("#serviceList").hide();
+    
+                $("#selectedServiceDisplay").text("Selected Service Center: " + serviceName); // Display selected service
+    
+                loadChat(serviceId, serviceName); // Load chat in a function
+            });
+    
+            function loadChat(serviceId, serviceName) {
+                currentServiceId = serviceId; // Store the current service ID
+                $("#chatbox").html(`<h3>Chat with ${serviceName}</h3><p>Loading messages...</p>`);
+    
+                fetchMessages(serviceId, serviceName); // Initial message load
+                startMessagePolling(serviceId, serviceName); // Start polling for new messages
+            }
+    
+            function fetchMessages(serviceId, serviceName) {
+                $.ajax({
+                    url: "/chat/get_messages/",
+                    type: "GET",
+                    data: { service_id: serviceId },
+                    dataType: "json",
+                    success: function (response) {
+                        let chatbox = $("#chatbox");
+                        chatbox.html(`<h3>Chat with ${serviceName}</h3>`);
+    
+                        if (response.messages.length === 0) {
+                            chatbox.append("<p>No messages yet. Start a conversation!</p>");
+                        } else {
+                            response.messages.forEach(msg => {
+                                let senderClass = msg.sender_id === Number("{{ request.session.user_id }}") ? "receiver" : "sender";
+                                let senderName = msg.sender_id === Number("{{ request.session.user_id }}") ? "You" : msg.sender; // Identify sender
+                                let messageTime = new Date(msg.timestamp).toLocaleString(); // Format timestamp
+    
+                                chatbox.append(`
+                                    <div class="chat-message ${senderClass}">
+                                        <strong>${senderName} (${messageTime}):</strong> ${msg.message}
+                                    </div>
+                                `);
+                            });
+                            chatbox.scrollTop(chatbox[0].scrollHeight); // Scroll to bottom
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error("Error fetching messages:", xhr.responseText);
+                        $("#errorArea").text("Error fetching messages. Please try again.");  // Non-intrusive error
+                    }
+                });
+            }
+    
+            let pollingInterval; // Store the interval ID
+            function startMessagePolling(serviceId, serviceName) {
+                // Stop any existing polling
+                if (pollingInterval) {
+                    clearInterval(pollingInterval);
+                }
+    
+                pollingInterval = setInterval(function () {
+                    if (currentServiceId === serviceId) { // Only poll if the same service is selected
+                        fetchMessages(serviceId, serviceName);
+                    }
+                }, 3000); // Poll every 3 seconds (adjust as needed)
+            }
+    
+            $(document).on("click", ".chat-link", function (e) {
+                e.preventDefault();
+                let serviceId = $(this).data("id");
+                let serviceName = $(this).text().trim();
+    
+                $("#serviceSearch").val(serviceName);
+                $("#selectedService").val(serviceId);
+                $("#serviceList").hide();
+    
+                $("#selectedServiceDisplay").text("Selected Service Center: " + serviceName);
+                loadChat(serviceId, serviceName);
+            });
+    
+            $(document).on("click", function (e) {
+                if (!$(e.target).closest("#serviceSearch, #serviceList, #recentChats").length) {
+                    $("#serviceList").hide();
+                }
+            });
+    
+            function sendMessage() {
+                let messageText = $("#messageInput").val().trim();
+                let receiverId = $("#selectedService").val();
+                let senderId = "{{ request.session.user_id }}";
+                let senderName = "You";
+    
+                if (!messageText) {
+                    $("#errorArea").text("Please type a message before sending.");
+                    return;
+                }
+    
+                if (!receiverId) {
+                    $("#errorArea").text("Please select a service center before sending a message.");
+                    return;
+                }
+    
+                if (!senderId) {
+                    $("#errorArea").text("User ID is missing. Please log in again.");
+                    return;
+                }
+    
+                $.ajax({
+                    url: "{% url 'save_message' %}",
+                    type: "POST",
+                    headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        sender_id: parseInt(senderId),
+                        receiver_id: parseInt(receiverId),
+                        message: messageText
+                    }),
+                    success: function (response) {
+                        $("#messageInput").val("");
+                        let messageTime = new Date().toLocaleString(); // Get current timestamp
+    
+                        $("#chatbox").append(`
+                            <div class="chat-message receiver">
+                                <strong>${senderName} (${messageTime}):</strong> ${messageText}
+                            </div>
+                        `);
+                        $("#chatbox").scrollTop($("#chatbox")[0].scrollHeight); // Scroll to bottom
+                    },
+                    error: function (xhr) {
+                        console.error("Error sending message:", xhr.responseText);
+                        $("#errorArea").text("Error sending message.");
+                    }
+                });
+            }
+    
+            $("#sendMessageBtn").on("click", function () {
+                sendMessage();
+            });
+    
+            $("#messageInput").on("keypress", function (event) {
+                if (event.which === 13 && !event.shiftKey) {
+                    event.preventDefault();
+                    sendMessage();
+                }
+            });
+    
+            $(document).ready(function () {
+                function fetchRecentChats() {
+                    console.log("Fetching recent chats..."); // Debugging log
+            
+                    $.ajax({
+                        url: "/chat/get_recent_chats/",  // Ensure this matches Django URL
+                        type: "GET",
+                        dataType: "json",
+                        success: function (response) {
+                            console.log("Recent Chats Response:", response); // Debugging log
+                            
+                            let recentList = $("#recentChats");
+                            recentList.empty();
+            
+                            if (response.recent_chats && response.recent_chats.length > 0) {
+                                response.recent_chats.forEach(chat => {
+                                    let chatItem = `
+                                        <li class="search-item">
+                                            <a href="#" class="chat-link" data-id="${chat.id}">
+                                                ${chat.name}
+                                            </a>
+                                        </li>
+                                    `;
+                                    recentList.append(chatItem);
+                                });
+                            } else {
+                                recentList.append('<li class="search-item">No recent chats found</li>');
+                            }
+                        },
+                        error: function (xhr) {
+                            console.error("Error fetching recent chats:", xhr.status, xhr.responseText);
+                        }
+                    });
+                }
+            
+                // Ensure the function runs when the page loads
+                fetchRecentChats(); 
+                window.fetchRecentChats = fetchRecentChats; // Make globally accessible
+            });
+            
+        });            
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <title>ATARA</title>
+                            <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'img/Alogo.jpg' %}">
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <meta content="" name="keywords">
+        <meta content="" name="description">
+
+        <!-- Google Web Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600&family=Roboto&display=swap" rel="stylesheet">
+
+        <!-- Icon Font Stylesheet -->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"/>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+        <!-- Libraries Stylesheet -->
+        <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+        <link href="{% static 'lib/lightbox/css/lightbox.min.css' %}" rel="stylesheet">
+
+        <!-- Customized Bootstrap Stylesheet -->
+        <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+
+        <!-- Template Stylesheet -->
+        <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    </head>
+
+    <body>
+
+        <!-- Spinner Start -->
+        <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </div>
+        <!-- Spinner End -->
+
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-dark px-4 px-lg-5 py-3">
+            <a href="#" class="navbar-brand">
+                <h1 class="m-0 text-primary"><i class="fa fa-map-marker-alt me-3"></i>ATARA</h1>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="fa fa-bars"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav ms-auto">
+                    <a href="/shome" class="nav-item nav-link">Home</a>
+                    <a href="service_order_details" class="nav-item nav-link">Order Details</a>
+                    <a href="sprofile" class="nav-item nav-link">Profile</a>
+                    <!-- Products Dropdown -->
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Products</a>
+                        <div class="dropdown-menu">
+                            <a href="padd" class="dropdown-item"><i class="fas fa-plus-circle me-2"></i>Add</a>
+                            <a href="pview" class="dropdown-item"><i class="fas fa-eye me-2"></i>View</a>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+            <!-- Sign Out Button -->
+    <a href="#" id="signOutBtn" class="btn btn-danger rounded-pill ms-3 px-3 py-1">
+        Sign Out
+    </a>
+
+            <!-- Confirmation Popup -->
+            <div id="confirmationPopup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                 background-color: white; color: white; padding: 30px; border-radius: 10px; width: 300px; text-align: center; box-shadow: 0 0 10px rgba(111, 216, 172, 0.5);">
+                <h5>Are you sure you want to sign out?</h5>
+                <button id="confirmSignOut" class="btn btn-danger m-2">Yes, Sign Out</button>
+                <button id="cancelSignOut" class="btn btn-primary m-2">Cancel</button>
+            </div>
+
+    <script>
+        // Show the confirmation popup when the sign-out button is clicked
+        document.getElementById('signOutBtn').addEventListener('click', function(event) {
+            event.preventDefault();  // Prevent the default behavior of the sign-out button
+            
+            // Display the confirmation popup
+            document.getElementById('confirmationPopup').style.display = 'block';
+        });
+
+        // If the user confirms the sign-out, redirect to the sign-out URL
+        document.getElementById('confirmSignOut').addEventListener('click', function() {
+            // Redirect to the sign-out page (adjust URL as needed)
+            window.location.href = '/';  // Adjust this URL if needed
+        });
+
+        // If the user cancels, hide the confirmation popup
+        document.getElementById('cancelSignOut').addEventListener('click', function() {
+            // Hide the confirmation popup
+            document.getElementById('confirmationPopup').style.display = 'none';
+        });
+    </script>
+        </nav>
+
+        <!-- Contact Start -->
+        <div class="container-fluid contact bg-light py-5">
+            <div class="container py-5">
+                <div class="mx-auto text-center mb-5" style="max-width: 900px;">
+                    <br>
+                    <br>
+                    <h1 class="mb-0">Add Products</h1>
+                </div>
+                <div class="row g-5 align-items-center">
+                    <div class="col-lg-8">
+                        <form method="POST" enctype="multipart/form-data" class="form-area contact-form text-right">
+                            {% csrf_token %}
+                            
+                            <!-- Modal -->
+                            <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="successModalLabel">Success</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            {% if messages %}
+                                                {% for message in messages %}
+                                                    {{ message }}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="file" class="form-control border-0" id="subject" name="Productimage" placeholder="Image" required>
+                                        <label for="message">Image</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control border-0" id="subject" name="Name" placeholder="Name" required>
+                                        <label for="email">Name</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control border-0" id="subject" name="Colour" placeholder="Location" required>
+                                        <label for="subject">Colour</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control border-0" id="subject" name="Memorycapacity" placeholder="Address" required>
+                                        <label for="message">Specification</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control border-0" id="subject" name="Description" placeholder="Pin" required>
+                                        <label for="message">Description</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control border-0" id="subject" name="Price" placeholder="Pin" required>
+                                        <label for="message">Price</label>
+                                    </div>
+                                    
+                                    <script>
+                                        // Function to remove special characters from the input field
+                                        function removeSpecialCharacters(event) {
+                                            let value = event.target.value;
+                                            // Remove all non-numeric characters (except decimals, if needed)
+                                            value = value.replace(/[^0-9.]/g, "");
+                                            event.target.value = value;
+                                        }
+                                        // Add event listener for input field to clean up value
+                                        document.getElementById('subject').addEventListener('input', removeSpecialCharacters);
+                                    </script>
+                                    
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <textarea class="form-control border-0" placeholder="details" id="message" name="Details" style="height: 160px" required></textarea>
+                                        <label for="message">Details</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button class="btn btn-primary w-100 py-3" type="submit">SUBMIT</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Start -->
+        <div class="container-fluid footer py-5">
+            <div class="container py-5">
+                <div class="row g-5">
+                    <!-- Footer content here -->
+                </div>
+            </div>
+        </div>
+        <!-- Footer End -->
+
+        <!-- Copyright Start -->
+        <div class="container-fluid copyright text-body py-4">
+            <div class="container">
+                <div class="row g-4 align-items-center">
+                    <div class="col-md-6 text-center text-md-end mb-md-0">
+                        <i class="fas fa-copyright me-2"></i><a class="text-white" href="#">Your Site Name</a>, All right reserved.
+                    </div>
+                    <div class="col-md-6 text-center text-md-start">
+                        Designed By <a class="text-white" href="https://htmlcodex.com">HTML Codex</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Copyright End -->
+
+        <!-- Back to Top -->
+        <a href="#" class="btn btn-primary btn-primary-outline-0 btn-md-square back-to-top"><i class="fa fa-arrow-up"></i></a> 
+
+        <!-- JavaScript Libraries -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+        <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+        <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+        <script src="{% static 'lib/lightbox/js/lightbox.min.js' %}"></script>
+
+        <!-- Template Javascript -->
+        <script src="{% static 'js/main.js' %}"></script>
+
+        <!-- Script to trigger modal -->
+        <script>
+            {% if messages %}
+                var myModal = new bootstrap.Modal(document.getElementById('successModal'), {
+                    keyboard: false
+                });
+                myModal.show();
+            {% endif %}
+        </script>
+
+    </body>
+
+</html>

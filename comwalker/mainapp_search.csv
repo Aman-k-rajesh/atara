@@ -1,0 +1,31 @@
+id,price,description,item
+1,149.99,AMD Ryzen 5 5600X CPU.6 Cores 12 Threads.Up to 4.6 GHz Boost Clock.Unlocked for Overclocking.Included Wraith Stealth Cooler,CPU
+2,249.99,NVIDIA GeForce RTX 3060 Ti GPU.8GB GDDR6 Memory.Ray Tracing and DLSS.PCIe 4.0 Interface.Dual Fan Cooling,GPU
+3,89.99,Corsair Vengeance LPX 16GB DDR4 RAM.3200MHz Speed.Dual Channel Kit (2x8GB).Low Profile Design.Black Heat Spreaders,RAM
+4,129.99,Samsung 980 1TB NVMe SSD.PCIe Gen 3.0 Interface.Read Speeds up to 3500 MB/s.Write Speeds up to 3000 MB/s.M.2 Form Factor,SSD
+5,99.99,Seagate Barracuda 2TB HDD.7200 RPM Spindle Speed.64MB Cache.SATA 6Gb/s Interface.3.5 Inch Form Factor,HDD
+6,149.99,ASUS ROG Strix B550-F Gaming Motherboard.AMD B550 Chipset.Supports Ryzen 5000 Series.PCIe 4.0 Support.ATX Form Factor,Motherboard
+7,79.99,Corsair CX650M 650W Power Supply.80+ Bronze Certified.Semi-Modular Cabling.Quiet Fan Operation.ATX Form Factor,Power Supply
+8,69.99,NZXT H510i Computer Case.Mid-Tower ATX Case.Tempered Glass Side Panel.Cable Management System.Integrated RGB Lighting,Case
+9,29.99,Cooler Master Hyper 212 CPU Cooler.Direct Contact Heat Pipes.Quiet 120mm Fan.Universal Compatibility.Easy Installation,CPU Cooler
+10,19.99,Arctic MX-4 Thermal Paste.High Thermal Conductivity.Easy to Apply.Non-Conductive.Long Lasting,Thermal Paste
+11,24.99,Corsair SP120 RGB Fans (3-Pack).120mm Size.Customizable RGB Lighting.Quiet Operation.For PC Cases,Case Fan
+12,14.99,Windows 11 Home Operating System.64-Bit Version.USB Drive Installation.Digital License.User-Friendly Interface,OS
+13,12.99,SATA Data Cable (2-Pack).Standard SATA Connector.For SSD/HDD Connection.High Speed Transfer.Durable Construction,SATA Cable
+14,9.99,Anti-Static Wrist Strap.Adjustable Band.Grounding Wire.Safe Handling of Components.Essential for PC Building,Anti-Static Strap
+15,19.99,Power Supply Cable.Standard AC Power Cord.For Powering PC.Durable Construction.1.5 meter length,Power Cable
+16,179.99,MSI MAG B660 Tomahawk WIFI Motherboard.Intel B660 Chipset.Supports 12th Gen Intel CPUs.DDR5 Support.ATX Form Factor,Motherboard
+17,279.99,Intel Core i5-13600K CPU.14 Cores 20 Threads.Up to 5.1 GHz Boost Clock.Unlocked for Overclocking.Integrated Graphics,CPU
+18,49.99,Noctua NF-A12x25 PWM Fan.120mm Size.High Performance.Quiet Operation.Premium Build Quality,Case Fan
+19,249.99,Western Digital Black 2TB NVMe SSD.PCIe Gen 4.0 Interface.Read Speeds up to 7000 MB/s.Write Speeds up to 5300 MB/s.M.2 Form Factor,SSD
+20,49.99,be quiet! Pure Rock 2 CPU Cooler.Efficient Cooling.Quiet Operation.Compact Design.Easy to Install,CPU Cooler
+21,119.99,G.Skill Ripjaws V 32GB DDR5 RAM.5600MHz Speed.Dual Channel Kit (2x16GB).Low Profile Design.Black Heat Spreaders,RAM
+22,34.99,Thermalright CPU Contact Frame.For 12th/13th Gen Intel CPUs.Improved CPU Cooling.Easy to install.Durable Material,CPU Contact Frame
+23,129.99,Seasonic FOCUS GX-750 750W Power Supply.80+ Gold Certified.Fully Modular Cabling.10-Year Warranty.ATX Form Factor,Power Supply
+24,139.99,Lian Li O11 Dynamic Computer Case.Mid-Tower ATX Case.Dual Chamber Design.Tempered Glass Panels.Excellent Airflow,Case
+25,39.99,USB to Fan Hub.Connects multiple case fans.Powered by USB.Simple installation.Speed control with software,USB Fan Hub
+26,19.99,M.2 Screw Kit.Assorted screws for M.2 drives.Suitable for most motherboards.Small and easy to store.Essential for M.2 installs,M.2 Screw Kit
+27,49.99,Front Panel Connectors.Various connectors for PC case.Power & Reset Buttons.USB 3.0 Audio Connectors.Easy to Install,Front Panel Connectors
+28,24.99,RGB LED Strip.Self-adhesive backing.Multiple colors and modes.USB powered or 12v connection.Adds color to your build,RGB LED Strip
+29,79.99,WiFi 6E PCIe Card.Latest WiFi technology.Fast and reliable connection.Bluetooth 5.2 support.Easy to Install,WiFi Card
+30,19.99,Dust Filters.Magnetic or screw-on design.Keeps dust out of PC.Easy to clean.Various sizes available,Dust Filter

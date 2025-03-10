@@ -1,0 +1,69 @@
+{% extends 'user/usernavbar.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Order Details and Feedback</h2>
+
+    <!-- Order Details -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>Order Details</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Product Name:</strong> {{ order.ProductName }}</p>
+            <p><strong>Price:</strong> ₹{{ order.Price }}</p>
+            <p><strong>Quantity:</strong> {{ order.Quantity }}</p>
+            <p><strong>Service Centre:</strong> {{ order.ServiceCentreName }}</p>
+            <p><strong>Address:</strong> {{ order.AddAddress }}</p>
+        </div>
+    </div>
+
+    <!-- Product Details -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>Product Details</h4>
+        </div>
+        <div class="card-body">
+            <img src="{{ order.Product.Productimage.url }}" alt="Product Image" class="img-fluid mb-3" style="max-width: 200px;">
+            <p><strong>Name:</strong> {{ order.Product.Name }}</p>
+            <p><strong>Colour:</strong> {{ order.Product.Colour }}</p>
+            <p><strong>Memory Capacity:</strong> {{ order.Product.Memorycapacity }}</p>
+            <p><strong>Description:</strong> {{ order.Product.Description }}</p>
+            <p><strong>Details:</strong> {{ order.Product.Details }}</p>
+        </div>
+    </div>
+
+    <!-- Feedback Form -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>Submit Your Feedback</h4>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="star_rating" class="form-label">Star Rating</label>
+                    <select class="form-select" id="star_rating" name="star_rating" required>
+                        <option value="">Select Rating</option>
+                        <option value="1">1 ★</option>
+                        <option value="2">2 ★★</option>
+                        <option value="3">3 ★★★</option>
+                        <option value="4">4 ★★★★</option>
+                        <option value="5">5 ★★★★★</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="feedback_text" class="form-label">Feedback</label>
+                    <textarea class="form-control" id="feedback_text" name="feedback_text" rows="4" required></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="feedback_image" class="form-label">Upload Image (optional)</label>
+                    <input class="form-control" type="file" id="feedback_image" name="feedback_image" accept="image/*">
+                </div>
+
+                <div class="mb-3">
+                    <label for="feedback_video" class="form-label">Upload Video (optional)<

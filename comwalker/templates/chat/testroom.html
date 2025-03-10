@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Chat</title>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const roomName = "{{ room_name }}";  // This should be set from Django views
+            const username = "{{ request.user.username }}";  // Get the logged-in user
+
+            // WebSocket connection
+            const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${roomName}/`);
+
+            chatSocket.onmessage = function (e) {
+                const data = JSON.parse(e.data);
+                const messageList = document.querySelector("#chat-messages");
+
+                // Append the received message to the chat box
+                const messageItem = document.createElement("li");
+                messageItem.textContent = `${data.sender}: ${data.message}`;
+                messageList.appendChild(messageItem);
+            };
+
+            chatSocket.onclose = function () {
+                console.error("Chat socket closed unexpectedly");
+            };
+
+            document.querySelector("#chat-message-submit").onclick = function () {
+                const messageInputDom = document.querySelector("#chat-message-input");
+                const message = messageInputDom.value;
+                chatSocket.send(JSON.stringify({
+                    "message": message,
+                    "sender": username
+                }));
+                messageInputDom.value = "";
+            };
+        });
+    </script>
+</head>
+<body>
+    <h2>Live Chat</h2>
+    <ul id="chat-messages">
+        <!-- Messages will be added here -->
+    </ul>
+    <input id="chat-message-input" type="text" placeholder="Type your message...">
+    <button id="chat-message-submit">Send</button>
+</body>
+</html>

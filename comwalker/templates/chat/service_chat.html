@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Chat</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { display: flex; }
+        .users-list { width: 30%; border-right: 1px solid #ccc; padding: 10px; }
+        .chat-box { width: 70%; padding: 10px; }
+        .messages { height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; }
+        .message-input { display: flex; margin-top: 10px; }
+        .message-input input { flex: 1; padding: 5px; }
+        .message-input button { padding: 5px; }
+        .chat-message {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 10px;
+            max-width: 60%;
+            word-wrap: break-word;
+        }
+        
+        .sender-message {
+            background-color: #dcf8c6;
+            text-align: right;
+            align-self: flex-end;
+            margin-left: auto;
+            border-radius: 10px 10px 0 10px;
+        }
+        
+        .receiver-message {
+            background-color: #f1f0f0;
+            text-align: left;
+            align-self: flex-start;
+            margin-right: auto;
+            border-radius: 10px 10px 10px 0;
+        }
+        
+        #chatbox {
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #fff;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="users-list">
+            <h3>Users</h3>
+            <ul id="users"></ul>
+        </div>
+        <div class="chat-box">
+            <div id="chatbox">
+                <h3 id="selectedUserName">Select a user to chat</h3>
+                <div class="messages" id="messages">
+                    {% for user in users %}
+                        <div class="chat-user" data-id="{{ user.id }}">{{ user.name }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="message-input">
+                <input type="text" id="messageInput" placeholder="Type your message">
+                <input type="hidden" id="receiverUserId" value="">  <!-- Set this dynamically -->
+                <button id="sendButton">Send</button>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    var serviceId = "{{ request.session.id }}";
+    let selectedUser = null;
+    let pollingInterval; // Store the polling interval ID
+
+    // ✅ Fetch users who messaged the service
+    function fetchUsers() {
+        $.ajax({
+            url: "/get_service_chat_users/",
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+                let usersList = $("#users");
+                usersList.empty();
+
+                if (response.users.length === 0) {
+                    usersList.append("<li>No users found</li>");
+                    return;
+                }
+
+                response.users.forEach(user => {
+                    usersList.append(`<li class="chat-user" data-id="${user.id}">${user.name}</li>`);
+                });
+            },
+            error: function (xhr) {
+                console.error("Error fetching users:", xhr.responseText);
+            }
+        });
+    }
+
+    // ✅ Fetch messages for the selected user
+    function fetchMessages(userId, userName) {
+        $.ajax({
+            url: "/chat/get_messages/",
+            type: "GET",
+            data: { service_id: userId },
+            dataType: "json",
+            success: function (response) {
+                let chatbox = $("#chatbox");
+    
+                if (chatbox.length === 0) {
+                    console.error("Error: #chatbox element not found!");
+                    return;
+                }
+    
+                chatbox.html(`<h3>Chat with ${userName}</h3>`);
+    
+                if (response.messages.length === 0) {
+                    chatbox.append("<p>No messages yet. Start a conversation!</p>");
+                } else {
+                    response.messages.forEach(msg => {
+                        let isSender = msg.sender_id === Number(serviceId);
+                        let senderName = isSender ? "You" : (msg.sender_name || userName);
+                        let senderClass = isSender ? "sender-message" : "receiver-message";
+                        let messageTime = new Date(msg.timestamp).toLocaleString();
+    
+                        chatbox.append(`
+                            <div class="chat-message ${senderClass}">
+                                <strong>${senderName} (${messageTime}):</strong> ${msg.message}
+                            </div>
+                        `);
+                    });
+    
+                    // ✅ Scroll to bottom
+                    chatbox.scrollTop(chatbox[0].scrollHeight);
+                }
+            },
+            error: function (xhr) {
+                console.error("Error fetching messages:", xhr.responseText);
+                $("#errorArea").text("Error fetching messages. Please try again.");
+            }
+        });
+    }
+    
+
+    // ✅ Start live polling for new messages
+    function startMessagePolling(userId, userName) {
+        if (pollingInterval) {
+            clearInterval(pollingInterval);
+        }
+
+        pollingInterval = setInterval(function () {
+            if (selectedUser === userId) {
+                fetchMessages(userId, userName);
+            }
+        }, 3000);
+    }
+
+    // ✅ Send a message
+    function sendMessage() {
+        let message = $("#messageInput").val().trim();
+        if (!message || !selectedUser) {
+            alert("Please enter a message and select a user.");
+            return;
+        }
+
+        $.ajax({
+            url: "/service_send_message/",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                user_id: selectedUser,
+                message: message
+            }),
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken")
+            },
+            success: function () {
+                $("#messageInput").val(""); // Clear input
+                fetchMessages(selectedUser, $("#selectedUserName").text().replace("Chat with ", ""));
+            },
+            error: function (xhr) {
+                console.error("Error sending message:", xhr.responseText);
+                alert("Error sending message! " + xhr.responseText);
+            }
+        });
+    }
+
+    // ✅ Send message when "Enter" is pressed
+    $(document).on("keypress", "#messageInput", function (event) {
+        if (event.which === 13 && !event.shiftKey) {
+            event.preventDefault();
+            sendMessage();
+        }
+    });
+
+    // ✅ Select user and load chat
+    $(document).on("click", ".chat-user", function () {
+        let userId = $(this).data("id");
+        let userName = $(this).text().trim();
+
+        selectedUser = userId;
+        $("#selectedUserName").text(`Chat with ${userName}`);
+
+        fetchMessages(userId, userName);
+        startMessagePolling(userId, userName);
+    });
+
+    // ✅ CSRF Token Helper
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            let cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // ✅ Load users when the page loads
+    $(document).ready(function () {
+        fetchUsers();
+
+        $("#sendButton").on("click", function () {
+            sendMessage();
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>ATARA Profile</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+                        <!-- Favicon -->
+                        <link rel="icon" type="image/png" href="{% static 'img/Alogo.jpg' %}">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600&family=Roboto&display=swap" rel="stylesheet">
+
+    <!-- Icons & Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+    <style>
+        /* General Styling */
+        body {
+            background: #f8f9fa;
+        }
+
+        /* Navbar Styling */
+        .navbar-nav .nav-link,
+        .dropdown .dropdown-toggle {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .navbar-nav .nav-link:hover,
+        .dropdown .dropdown-toggle:hover {
+            color: #007bff !important;
+            transform: scale(1.05); /* Slight zoom effect */
+        }
+
+        .dropdown-menu {
+            transition: all 0.3s ease-in-out;
+            transform: translateY(-10px);
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Hero Section */
+        .hero-header {
+            background: #007bff;
+            color: white;
+            padding: 120px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        /* Profile Section */
+        .container {
+            max-width: 800px;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            margin-top: -50px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-header img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid white;
+            background: white;
+            margin-top: -75px;
+            position: relative;
+            z-index: 3;
+        }
+
+        /* Button Hover Effects */
+        .profile-button {
+            background: #007bff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        .profile-button:hover {
+            background: #0056b3;
+            transform: scale(1.05);
+        }
+
+        .back-button {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .back-button:hover {
+            text-decoration: underline;
+            color: #0056b3;
+        }
+    
+        
+            body {
+                font-family: 'Arial', sans-serif;
+                background-color: #f4f6f9; /* Light background color */
+                margin: 0;
+                padding: 20px;
+            }
+    
+            table {
+                width: 80%;
+                margin: 40px auto;
+                border-radius: 10px; /* Rounded corners */
+                overflow: hidden; /* Hide any overflow */
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
+                background: linear-gradient(45deg, #fff, #f1f1f1); /* Light gradient background */
+                border-collapse: collapse;
+            }
+    
+            th, td {
+                padding: 15px 20px; /* Spacing inside cells */
+                text-align: center;
+                font-size: 16px;
+                color: #333; /* Dark text for contrast */
+            }
+    
+            /* Styling for header row */
+            th {
+                background-color: #6c5ce7; /* Purple color */
+                color: white;
+                text-transform: uppercase; /* Capitalize text */
+                letter-spacing: 1px; /* Add spacing between letters */
+            }
+    
+            /* Styling for table rows */
+            td {
+                background-color: #fff;
+                border-bottom: 1px solid #ddd; /* Light borders between rows */
+            }
+    
+            /* Alternate row colors for better readability */
+            tr:nth-child(even) td {
+                background-color: #f9f9f9; /* Light gray background for even rows */
+            }
+    
+            /* Hover effect on rows */
+            tr:hover {
+                background-color: #ffeb3b; /* Yellow background on hover */
+                cursor: pointer; /* Cursor changes to pointer */
+            }
+    
+            /* Styling for the table caption */
+            caption {
+                font-size: 1.8em;
+                color: #6c5ce7; /* Matching caption color */
+                margin-bottom: 10px;
+                font-weight: bold;
+            }
+    
+            /* Optional: Add subtle transition for hover effect */
+            tr {
+                transition: background-color 0.3s ease;
+            }
+    
+            /* Additional mobile responsiveness */
+            @media (max-width: 768px) {
+                table {
+                    width: 100%;
+                }
+                th, td {
+                    font-size: 14px;
+                    padding: 10px;
+                }
+            }
+        </style>
+
+
+    <body>
+       <!-- Spinner Start -->
+       <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+
+    
+
+    
+    
+    <!-- Navbar Start -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-dark px-4 px-lg-5 py-3">
+        <a href="#" class="navbar-brand">
+            <h1 class="m-0 text-primary"><i class="fa fa-map-marker-alt me-3"></i>ATARA</h1>
+        </a>
+<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+    <span class="fa fa-bars"></span>
+</button>
+<div class="collapse navbar-collapse" id="navbarCollapse">
+    <div class="navbar-nav ms-auto py-0">
+        <a href="/shome" class="nav-item nav-link ">Home</a>
+        
+        <a href="service_order_details" class="nav-item nav-link active">Order Details</a>
+        <a href="sprofile" class="nav-item nav-link">Profile</a>
+        
+        <!-- Products Dropdown -->
+        <div class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Products</a>
+            <div class="dropdown-menu rounded">
+                <a href="padd" class="dropdown-item"><i class="fas fa-plus-circle me-2"></i>Add</a>
+                <a href="pview" class="dropdown-item"><i class="fas fa-eye me-2"></i>Views</a>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- Sign Out Button -->
+    <a href="#" id="signOutBtn" class="btn btn-danger rounded-pill ms-3 px-3 py-1">
+        Sign Out
+    </a>
+
+            <!-- Confirmation Popup -->
+            <div id="confirmationPopup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                 background-color: white; color: white; padding: 30px; border-radius: 10px; width: 300px; text-align: center; box-shadow: 0 0 10px rgba(111, 216, 172, 0.5);">
+                <h5>Are you sure you want to sign out?</h5>
+                <button id="confirmSignOut" class="btn btn-danger m-2">Yes, Sign Out</button>
+                <button id="cancelSignOut" class="btn btn-primary m-2">Cancel</button>
+            </div>
+
+    <script>
+        // Show the confirmation popup when the sign-out button is clicked
+        document.getElementById('signOutBtn').addEventListener('click', function(event) {
+            event.preventDefault();  // Prevent the default behavior of the sign-out button
+            
+            // Display the confirmation popup
+            document.getElementById('confirmationPopup').style.display = 'block';
+        });
+
+        // If the user confirms the sign-out, redirect to the sign-out URL
+        document.getElementById('confirmSignOut').addEventListener('click', function() {
+            // Redirect to the sign-out page (adjust URL as needed)
+            window.location.href = '/';  // Adjust this URL if needed
+        });
+
+        // If the user cancels, hide the confirmation popup
+        document.getElementById('cancelSignOut').addEventListener('click', function() {
+            // Hide the confirmation popup
+            document.getElementById('confirmationPopup').style.display = 'none';
+        });
+    </script>
+</div>
+</nav>
+</div>
+<!-- Navbar End -->
+    <br>
+    <br>
+    <br>
+    <br>
+    <h2 class="text-center mt-5">Order Details</h2>
+        <table>
+            <caption></caption>
+            <thead>
+                <tr>
+                    <th>Product Name </th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Service Centre Name</th>
+                    <th>User Name</th>
+                    <th>User Email</th>
+                    <th>Payment Status</th>
+                    <th>Booking Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in u %}
+                <tr>
+                    <td>{{u.ProductName}}</td>
+                    <td>{{u.Price}}</td>
+                    <td>{{u.Quantity}}</td>
+                    <td>{{u.ServiceCentreName}}</td>
+                    <td>{{u.uf.FullName}}</td>
+                    <td>{{u.uf.Email}}</td>
+                    <td>
+                        {% if u.Paymentstatus %}
+                        <div class="col-12">
+                            <a class="btn btn-primary text-white w-100 py-3" >Payment success</a>
+                            {% comment %} <a class="btn btn-primary text-white w-100 py-3" href="{% url 'bookingpay' u.id %}">Payment</a> {% endcomment %}
+    
+                                {% comment %} <button class="btn btn-primary text-white w-100 py-3" type="submit">Payment</button>  {% endcomment %}
+                            </div>
+                        {% else %}
+                       
+                        <div class="col-12">
+                        <a class="btn btn-primary text-white w-100 py-3" >Payment Pending...</a>
+
+                            {% comment %} <button class="btn btn-primary text-white w-100 py-3" type="submit">Payment</button>  {% endcomment %}
+                        </div>
+                        {% endif %}
+                    {% comment %} <td <a style = "color:#33ff39">Approved</td></a>
+                    <td <a style = "color:#f30d29">Rejected</td></a> {% endcomment %}
+                    <td class="px-4 py-3 text-xs">
+                        {% if u.Bookingstatus %}
+                      
+                        <span
+                          class="btn btn-primary text-white w-100 py-3"
+                        >
+                        Approved
+                        </span>
+              
+                      {% else %}
+                      <a href="{% url 'userbookingapprove' u.id %}" >
+                        <span
+                         class="btn btn-primary text-white w-100 py-3"
+                        >
+                        Approve
+                        </span>
+                      {% endif %}
+      
+                      </td>
+                    
+                </tr>
+                {% endfor %}
+                {% comment %} <tr> 
+                    <td>102</td>
+                    <td>Smartwatch</td>
+                    <td>Accessories</td>
+                    <td>$199.99</td>
+                </tr>
+                <tr>
+                    <td>103</td>
+                    <td>Bluetooth Speaker</td>
+                    <td>Audio</td>
+                    <td>$89.99</td>
+                </tr>
+                <tr>
+                    <td>104</td>
+                    <td>Gaming Laptop</td>
+                    <td>Computers</td>
+                    <td>$1,199.00</td>
+                </tr>
+                <tr>
+                    <td>105</td>
+                    <td>Phone Charger</td>
+                    <td>Accessories</td>
+                    <td>$19.99</td>
+                </tr>{% endcomment %}
+            </tbody>
+        </table>
+    
+    
+    
+
+     <!-- Back to Top -->
+     <a href="#" class="btn btn-primary btn-primary-outline-0 btn-md-square back-to-top"><i class="fa fa-arrow-up"></i></a>   
+
+        
+     <!-- JavaScript Libraries -->
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+     <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+     <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+     <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+     <script src="{% static 'lib/lightbox/js/lightbox.min.js' %}"></script>
+     
+
+     <!-- Template Javascript -->
+     <script src="{% static 'js/main.js' %}"></script>
+ </body>
+
+</html>

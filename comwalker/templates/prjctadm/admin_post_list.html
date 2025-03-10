@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Community Posts</title>
+</head>
+<body>
+    <h1>Community Posts</h1>
+    <hr>
+    {% comment %} <a href="{% url 'create_post' %}">Create New Post</a>
+    <hr> {% endcomment %}
+    {% for post in posts %}
+        <div>
+            <h2>{{ post.product_name }}</h2>
+            <p>{{ post.description }}</p>
+            {% if post.image %}
+                <img src="{{ post.image.url }}" width="200">
+            {% endif %}
+            <p>Posted by {{ post.user.username }} on {{ post.created_at }}</p>
+        </div>
+        <hr>
+    {% empty %}
+        <p>No posts yet.</p>
+    {% endfor %}
+</body>
+</html>
